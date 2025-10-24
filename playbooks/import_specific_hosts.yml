@@ -1,0 +1,55 @@
+---
+- name: Add specific hosts to AWX inventory
+  hosts: localhost
+  gather_facts: false
+  vars:
+    awx_url: "http://192.168.1.211"
+    awx_token: "qGnWDjPzC9qn4YjZWzivNJCIGoX64h"
+    inventory_id: 1
+    hosts_to_add:
+      - { ip: "192.168.1.51",  name: "BKSAL051.local" }
+      - { ip: "192.168.1.52",  name: "BKSAL052.local" }
+      - { ip: "192.168.1.61",  name: "BKSAL061.local" }
+      - { ip: "192.168.1.64",  name: "BKSAL064.local" }
+      - { ip: "192.168.1.66",  name: "BKSAL066.local" }
+      - { ip: "192.168.1.67",  name: "BKSAL067.local" }
+      - { ip: "192.168.1.68",  name: "BKSAL068.local" }
+      - { ip: "192.168.1.69",  name: "BKSAL069.local" }
+      - { ip: "192.168.1.70",  name: "BKSAL070.local" }
+      - { ip: "192.168.1.71",  name: "BKSAL071.local" }
+      - { ip: "192.168.1.72",  name: "BKSAL072.local" }
+      - { ip: "192.168.1.168", name: "BKSAL072.local" }
+      - { ip: "192.168.1.75",  name: "BKSAL075.local" }
+      - { ip: "192.168.1.77",  name: "BKSAL077.local" }
+      - { ip: "192.168.1.79",  name: "BKSAL079.local" }
+      - { ip: "192.168.1.80",  name: "BKSAL080.local" }
+      - { ip: "192.168.1.81",  name: "BKSAL081.local" }
+      - { ip: "192.168.1.83",  name: "BKSAL083.local" }
+      - { ip: "192.168.1.103", name: "BKSAL103.local" }
+      - { ip: "192.168.1.116", name: "BKSAL116.local" }
+      - { ip: "192.168.1.127", name: "BKSAL127.local" }
+      - { ip: "192.168.1.129", name: "BKSAL129.local" }
+      - { ip: "192.168.1.131", name: "BKSAL131.local" }
+      - { ip: "192.168.1.138", name: "BKSAL138.local" }
+
+  tasks:
+    - name: Add each host to AWX inventory
+      uri:
+        url: "{{ awx_url }}/api/v2/hosts/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ awx_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "{{ item.name }}"
+          inventory: "{{ inventory_id }}"
+          enabled: true
+          description: "Imported via playbook"
+          variables:
+            ansible_host: "{{ item.ip }}"
+        status_code: 201
+        return_content: true
+      loop: "{{ hosts_to_add }}"
+      loop_control:
+        label: "{{ item.name }}"
