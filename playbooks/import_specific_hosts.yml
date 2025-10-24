@@ -45,8 +45,10 @@
           name: "{{ item.name }}"
           enabled: true
           description: "Imported via playbook"
-          variables:
-            ansible_host: "{{ item.ip }}"
+          variables: |
+            ansible_host: {{ item.ip }}
+            imported_by: playbook
+            location: Bangkok
         status_code: 201
         return_content: true
       loop: "{{ hosts_to_add }}"
