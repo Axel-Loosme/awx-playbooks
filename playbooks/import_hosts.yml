@@ -1,0 +1,31 @@
+---
+- name: Bulk add IPs to AWX inventory
+  hosts: localhost
+  gather_facts: false
+  vars:
+    awx_url: "http://192.168.1.211"
+    awx_token: "qGnWDjPzC9qn4YjZWzivNJCIGoX64h"
+    inventory_id: 1
+    ip_range_start: 50
+    ip_range_end: 150
+
+  tasks:
+    - name: Add IPs to AWX inventory
+      uri:
+        url: "{{ awx_url }}/api/v2/hosts/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ awx_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "{{ '192.168.1.' ~ item }}"
+          inventory: "{{ inventory_id | int }}"
+          enabled: true
+          description: "Imported via playbook"
+          variables: {}
+        status_code: 201
+        return_content: true
+      loop: "{{ range(ip_range_start, ip_range_end + 1) | list }}"
+      loop_control:
+        label: "{{ '192.168.1.' ~ item }}"
