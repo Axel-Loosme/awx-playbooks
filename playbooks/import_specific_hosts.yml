@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   vars:
-    awx_url: "http://192.168.1.211"
+    awx_url: "http://192.168.1.211:30080"
     awx_token: "qGnWDjPzC9qn4YjZWzivNJCIGoX64h"
     inventory_id: 1
     hosts_to_add:
@@ -35,7 +35,7 @@
   tasks:
     - name: Add each host to AWX inventory
       uri:
-        url: "{{ awx_url }}/api/v2/hosts/"
+        url: "{{ awx_url }}/api/v2/inventories/{{ inventory_id }}/hosts/"
         method: POST
         headers:
           Authorization: "Bearer {{ awx_token }}"
@@ -43,7 +43,6 @@
         body_format: json
         body:
           name: "{{ item.name }}"
-          inventory: "{{ inventory_id }}"
           enabled: true
           description: "Imported via playbook"
           variables:
